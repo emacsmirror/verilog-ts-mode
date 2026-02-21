@@ -58,6 +58,16 @@ To install it via [straight](https://github.com/radian-software/straight.el) wit
 (use-package verilog-ts-mode)
 ```
 
+### GUIX ###
+
+To install via [Guix](https://guix.gnu.org) use:
+
+``` shell
+$ guix install emacs-verilog-ts-mode
+```
+
+No need to manually install tree-sitter, it is pulled automatically.
+
 ### Tree-sitter grammar ###
 
 The package provides an interactive command to simplify the installation of the grammar:
