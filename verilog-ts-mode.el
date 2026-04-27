@@ -149,7 +149,7 @@ Alignment is performed after execution of `verilog-ts-pretty-declarations' and
 
 If optional BOUND is non-nil, return nil if point is not over a symbol."
   (let* ((pos (point))
-         (node (treesit-node-at pos 'verilog)))
+         (node (treesit-node-at pos 'systemverilog)))
     (if bound
         (when (and (>= pos (treesit-node-start node))
                    (<= pos (treesit-node-end node)))
@@ -813,12 +813,12 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
 (defvar verilog-ts--font-lock-settings
   (treesit-font-lock-rules
    :feature 'comment
-   :language 'verilog
+   :language 'systemverilog
    '(((one_line_comment) @font-lock-comment-face)
      ((block_comment) @font-lock-comment-face))
 
    :feature 'string
-   :language 'verilog
+   :language 'systemverilog
    '([(string_literal)
       (quoted_string) ; `include strings
       (system_lib_string)
@@ -826,19 +826,19 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
      @font-lock-string-face)
 
    :feature 'keyword
-   :language 'verilog
+   :language 'systemverilog
    `((["begin" "end" "this"] @verilog-ts-font-lock-grouping-keywords-face)
      (["input" "output" "inout" "ref"] @verilog-ts-font-lock-direction-face)
      ([,@verilog-ts-keywords] @font-lock-keyword-face))
 
    :feature 'preprocessor
-   :language 'verilog
+   :language 'systemverilog
    `(([,@verilog-ts-directives] @verilog-ts-font-lock-preprocessor-face)
      (text_macro_usage
       (simple_identifier) @verilog-ts-font-lock-preprocessor-face))
 
    :feature 'punctuation
-   :language 'verilog
+   :language 'systemverilog
    `(([,@verilog-ts-punctuation] @verilog-ts-font-lock-punctuation-face)
      (["."] @verilog-ts-font-lock-operator-face)
      (["(" ")"] @verilog-ts-font-lock-parenthesis-face)
@@ -849,7 +849,7 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
 
 
    :feature 'operator
-   :language 'verilog
+   :language 'systemverilog
    `(;; INFO: Some of these might be redundant
      ([,@verilog-ts-operators-arithmetic] @verilog-ts-font-lock-operator-face)
      ([,@verilog-ts-operators-relational] @verilog-ts-font-lock-punctuation-face)
@@ -866,7 +866,7 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
      ((event_trigger (["->" "->>"]) @verilog-ts-font-lock-operator-face)))
 
    :feature 'declaration
-   :language 'verilog
+   :language 'systemverilog
    '(;; Module/interface/program/package/class/checker
      (module_nonansi_header
       name: (simple_identifier) @font-lock-function-name-face)
@@ -906,7 +906,7 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
        (simple_identifier) @verilog-ts-font-lock-dot-name-face)))
 
    :feature 'type
-   :language 'verilog
+   :language 'systemverilog
    `(([(integer_vector_type) ; bit, logic, reg
        (integer_atom_type)   ; byte, shortint, int, longint, integer, time
        (non_integer_type)    ; shortreal, real, realtime
@@ -943,7 +943,7 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
       (simple_identifier) @font-lock-type-face))
 
    :feature 'instance
-   :language 'verilog
+   :language 'systemverilog
    '(;; Module names
      (module_instantiation
       instance_type: (simple_identifier) @verilog-ts-font-lock-module-face)
@@ -994,7 +994,7 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
        (simple_identifier) @font-lock-type-face)))
 
    :feature 'number
-   :language 'verilog
+   :language 'systemverilog
    '((hex_number
       size: (unsigned_number) @verilog-ts-font-lock-width-num-face
       base: (hex_base) @verilog-ts-font-lock-width-type-face)
@@ -1018,7 +1018,7 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
       base: (binary_base) @verilog-ts-font-lock-width-type-face))
 
    :feature 'array
-   :language 'verilog
+   :language 'systemverilog
    :override t
    '((unpacked_dimension
       [(constant_expression) (constant_range)] @verilog-ts-font-lock-brackets-content-face)
@@ -1045,7 +1045,7 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
       (expression) @font-lock-constant-face))
 
    :feature 'misc
-   :language 'verilog
+   :language 'systemverilog
    '(;; Timeunit
      ((time_unit) @font-lock-constant-face)
      ;; Enum labels
@@ -1109,7 +1109,7 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
        (list_of_parameter_value_assignments) @verilog-ts-font-lock-dot-name-face)))
 
    :feature 'system-tf
-   :language 'verilog
+   :language 'systemverilog
    :override t ; Highlight system_tf calls inside array ranges
    '([(system_tf_identifier)               ; System task/function
       "$fatal" "$error" "$warning" "$info" ; (severity_system_task)
@@ -1117,7 +1117,7 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
      @font-lock-builtin-face)
 
    :feature 'error
-   :language 'verilog
+   :language 'systemverilog
    :override t
    '((ERROR) @verilog-ts--fontify-error)))
 
@@ -1487,7 +1487,7 @@ Indent package imports on ANSI headers, used in conjunction with
      'symbols)))
 
 (defvar verilog-ts--treesit-indent-rules
-  `((verilog
+  `((systemverilog
      ;; Unit scope
      (verilog-ts--matcher-unit-scope verilog-ts--anchor-point-min 0) ; Place first for highest precedence
      ;; Comments
@@ -1794,7 +1794,7 @@ of.  If nil, use the root node of the whole parse tree.
 
 Copied from Python's `python-imenu-treesit-create-index' and adapted
 to SystemVerilog parser."
-  (let* ((node (or node (treesit-buffer-root-node 'verilog)))
+  (let* ((node (or node (treesit-buffer-root-node 'systemverilog)))
          (tree (treesit-induce-sparse-tree
                 node
                 verilog-ts-imenu-create-index-re
@@ -2819,12 +2819,9 @@ and the linker to be installed and on PATH."
 (define-derived-mode verilog-ts-mode verilog-mode "SystemVerilog"
   "Major mode for editing SystemVerilog files, using tree-sitter library."
   :syntax-table verilog-ts-mode-syntax-table
-  ;; Emacs convention expects 'verilog' instead of 'systemverilog' for `verilog-ts-mode':
-  ;;  - https://www.gnu.org/software/emacs/manual/html_node/elisp/Language-Grammar.html
-  (add-to-list 'treesit-load-name-override-list '(verilog "libtree-sitter-systemverilog" "tree_sitter_systemverilog"))
   ;; Treesit
-  (when (treesit-ready-p 'verilog)
-    (treesit-parser-create 'verilog)
+  (when (treesit-ready-p 'systemverilog)
+    (treesit-parser-create 'systemverilog)
     ;; Font-lock.
     (setq font-lock-defaults nil) ; Disable `verilog-mode' font-lock/indent config
     (setq-local treesit-font-lock-feature-list
