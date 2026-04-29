@@ -809,6 +809,18 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
                                    'append
                                    start end)))
 
+(defun verilog-ts--fontify-missing (node _override start end &rest _)
+  "Fontify non-visible MISSING errors with a red wavy underline.
+
+For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
+  (when (and verilog-ts-linter-enable
+             (string= (treesit-node-text node) "")) ; Emacs provides empty nodes for MISSING ones
+    (treesit-fontify-with-override (1- (treesit-node-start node))
+                                   (treesit-node-end node)
+                                   '(:underline (:style wave :color "Red1"))
+                                   'append
+                                   start end)))
+
 ;;;; Treesit-settings
 (defvar verilog-ts--font-lock-settings
   (treesit-font-lock-rules
@@ -1119,7 +1131,14 @@ For NODE,OVERRIDE, START, END, and ARGS, see `treesit-font-lock-rules'."
    :feature 'error
    :language 'systemverilog
    :override t
-   '((ERROR) @verilog-ts--fontify-error)))
+   '(((ERROR) @verilog-ts--fontify-error)
+     ;; MISSING errors for trailing commas in modules port lists
+     ((list_of_port_declarations
+       (ansi_port_declaration
+        (simple_identifier) @verilog-ts--fontify-missing)))
+     ((list_of_ports
+       (port
+        (simple_identifier) @verilog-ts--fontify-missing))))))
 
 
 ;;; Indent
