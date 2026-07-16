@@ -2115,7 +2115,7 @@ If optional arg BWD is non-nil, search backwards."
   (verilog-ts-find-module-instance :bwd))
 
 (defun verilog-ts--begin-level-down-fn (node)
-  "Aux function to search nodes in the subtree for `verilog-ts-goto-begin-down'."
+  "Aux function to search for NODE in the subtree for `verilog-ts-goto-begin-down'."
   (and (string-match verilog-ts-goto-begin-down-re (treesit-node-type node)) ; Match against begin-down regexp (default behavior)
        (> (treesit-node-start node) (point))                                      ; Downwards navigating should always move point forward
        (not (equal node verilog-ts--begin-level-down-parent-node))))              ; Exclude current node to avoid deadlocks while navigating down
@@ -2371,7 +2371,7 @@ expression-like nodes even if there is no assignment."
   (let* ((node-lines-with-comments (save-excursion
                                      (seq-filter (lambda (node)
                                                    (goto-char (treesit-node-start node))
-                                                   (goto-char (line-beginning-position))
+                                                   (beginning-of-line)
                                                    (re-search-forward "//" (line-end-position) t))
                                                  nodes)))
          (node-lines (mapcar (lambda (node)
@@ -2380,7 +2380,7 @@ expression-like nodes even if there is no assignment."
          (indent-levels (mapcar (lambda (node)
                                   (save-excursion
                                     (goto-char (treesit-node-start node))
-                                    (goto-char (line-beginning-position))
+                                    (beginning-of-line)
                                     (re-search-forward "//" (line-end-position) t)
                                     (backward-char 2)
                                     (skip-chars-backward " \t\n\r")
